@@ -41,10 +41,6 @@ public class Main {
 
         // Instantiate ChromeOptions and set the binary path
         ChromeOptions options = new ChromeOptions();
-        //options.addArguments("--headless");
-        options.addArguments("--disable-automation");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-
         options.setBinary(chromeBinaryPath);
 
         // Instantiate a ChromeDriver object with ChromeOptions
@@ -54,7 +50,7 @@ public class Main {
         driver.get("https://www.kijijiautos.ca/cars/ferrari/");
 
         // Wait for the article elements to be present
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         List<WebElement> articleElements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.tagName("article")));
 
         // Initialize list to store scraped data
@@ -102,27 +98,26 @@ public class Main {
         Elements listings2 = doc2.select("div.result-item");
 
         // Instantiate a ChromeDriver object with ChromeOptions
-        WebDriver driver2 = new ChromeDriver(options);
+        //WebDriver driver2 = new ChromeDriver(options);
 
         // Open the webpage
-        driver2.get("https://www.autotrader.ca/cars/ferrari/on");
-        List<WebElement> articleElements2 = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("result-item")));
+        //driver2.get("https://www.autotrader.ca/cars/ferrari/on");
+        //List<WebElement> articleElements2 = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.result-item")));
 
         // Create list for AutoTrader Listings
         ArrayList<AutoTraderListing> autoTraderListings = new ArrayList<>();
 
-        for (int i = 0; i < Math.min(articleElements2.size(), listings2.size()); i++) {
-            WebElement article2 = articleElements2.get(i);
-            Element listing2 = listings2.get(i);
+        for (Element listing2 : listings2) {
+
             AutoTraderListing autoTraderListing = new AutoTraderListing();
 
             // Extracting url
-            WebElement anchor = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("a.detail-price-area")));
-            String url = anchor.getAttribute("href");
+            String url = listing2.selectFirst("a.detail-price-area").attr("href");
             autoTraderListing.setUrl(url);
 
             // Extracting name data
-            autoTraderListing.setName(article2.findElement(By.cssSelector("span.title-with-trim")).getText());
+            String name = listing2.selectFirst("span.title-with-trim").text();
+            autoTraderListing.setPrice(name);
 
             // Extracting price data
             String price = listing2.selectFirst("span.price-amount").text();
@@ -135,7 +130,7 @@ public class Main {
         System.out.println(autoTraderListings);
 
         driver.quit();
-        driver2.quit();
+        //driver2.quit();
 
     }
 }

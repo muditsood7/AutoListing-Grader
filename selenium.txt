@@ -41,10 +41,6 @@ public class Main {
 
         // Instantiate ChromeOptions and set the binary path
         ChromeOptions options = new ChromeOptions();
-        //options.addArguments("--headless");
-        options.addArguments("--disable-automation");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-
         options.setBinary(chromeBinaryPath);
 
         // Instantiate a ChromeDriver object with ChromeOptions
@@ -54,7 +50,7 @@ public class Main {
         driver.get("https://www.kijijiautos.ca/cars/ferrari/");
 
         // Wait for the article elements to be present
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         List<WebElement> articleElements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.tagName("article")));
 
         // Initialize list to store scraped data
@@ -92,7 +88,7 @@ public class Main {
 
         try {
             doc2 = Jsoup.connect("https://www.autotrader.ca/cars/ferrari/on")
-                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+                    .userAgent("Mozilla/6.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
                     .header("Accept-Language", "*")
                     .get();
         } catch (IOException e) {
@@ -106,7 +102,7 @@ public class Main {
 
         // Open the webpage
         driver2.get("https://www.autotrader.ca/cars/ferrari/on");
-        List<WebElement> articleElements2 = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.className("result-item")));
+        List<WebElement> articleElements2 = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.result-item")));
 
         // Create list for AutoTrader Listings
         ArrayList<AutoTraderListing> autoTraderListings = new ArrayList<>();

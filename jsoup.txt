@@ -1,0 +1,48 @@
+package scraper;
+
+import org.jsoup.*;
+import org.jsoup.nodes.*;
+import org.jsoup.select.*;
+import java.util.ArrayList;
+
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) {
+
+        Document doc;
+
+        try {
+            doc = Jsoup.connect("https://www.kijijiautos.ca/cars/lamborghini/")
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
+                    .header("Accept-Language", "*")
+                    .get();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        //initialize list of object listing to store scraped data
+        ArrayList<KijijiListing> kijijiListings = new ArrayList<>();
+
+        Elements listings = doc.select("article");
+
+        for (Element listing : listings) {
+            KijijiListing kijijiListing = new KijijiListing();
+
+            // extracting data of interest
+            kijijiListing.setUrl(listing.selectFirst("article").attr("href"));
+            kijijiListing.setName(listing.selectFirst("h2.G2jAym").text());
+            kijijiListing.setPrice(listing.selectFirst("span.G2jAym.d3uM7V.C2jAym.p2jAym.b2jAym").text());
+
+            kijijiListings.add(kijijiListing);
+        }
+
+        // Print the scraped listings
+        for (KijijiListing listing : kijijiListings) {
+            System.out.println("Name: " + listing.getName());
+            System.out.println("URL: " + listing.getUrl());
+            System.out.println("Price: " + listing.getPrice());
+            System.out.println();
+        }
+    }
+}
